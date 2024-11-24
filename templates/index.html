@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>KubeOps Monitor</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+
+        .navbar {
+            background-color: #007bff;
+            color: #ffffff;
+            padding: 15px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .container {
+            margin: 30px auto;
+            text-align: center;
+            max-width: 1000px;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #007bff;
+        }
+
+        .gauges {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .gauge-container {
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            flex: 1 1 300px;
+            max-width: 400px;
+        }
+
+        .alert {
+            margin: 20px auto;
+            padding: 15px;
+            background-color: #f8d7da;
+            border: 1px solid #f5c2c7;
+            border-radius: 5px;
+            color: #842029;
+            font-weight: bold;
+            max-width: 600px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">KubeOps Monitor</div>
+    <div class="container">
+        <h1>System Monitoring Dashboard</h1>
+
+        <div class="gauges">
+            <div class="gauge-container">
+                <div id="cpu-gauge"></div>
+            </div>
+            <div class="gauge-container">
+                <div id="mem-gauge"></div>
+            </div>
+            <div class="gauge-container">
+                <div id="disk-gauge"></div>
+            </div>
+            <div class="gauge-container">
+                <div id="network-gauge"></div>
+            </div>
+        </div>
+
+        {% if message %}
+        <div class="alert">{{ message }}</div>
+        {% endif %}
+    </div>
+    <script>
+        // CPU Gauge
+        var cpuGauge = {
+            type: "indicator",
+            mode: "gauge+number",
+            value: {{ cpu_metric }},
+            gauge: {
+                axis: { range: [null, 100] },
+                bar: { color: "#007bff" },
+                steps: [
+                    { range: [0, 50], color: "#d4edda" },
+                    { range: [50, 85], color: "#ffeeba" },
+                    { range: [85, 100], color: "#f8d7da" }
+                ]
+            }
+        };
+
+        // Memory Gauge
+        var memGauge = {
+            type: "indicator",
+            mode: "gauge+number",
+            value: {{ mem_metric }},
+            gauge: {
+                axis: { range: [null, 100] },
+                bar: { color: "#007bff" },
+                steps: [
+                    { range: [0, 50], color: "#d4edda" },
+                    { range: [50, 85], color: "#ffeeba" },
+                    { range: [85, 100], color: "#f8d7da" }
+                ]
+            }
+        };
+
+        // Disk Usage Gauge
+        var diskGauge = {
+            type: "indicator",
+            mode: "gauge+number",
+            value: {{ disk_metric }},
+            gauge: {
+                axis: { range: [null, 100] },
+                bar: { color: "#007bff" },
+                steps: [
+                    { range: [0, 50], color: "#d4edda" },
+                    { range: [50, 85], color: "#ffeeba" },
+                    { range: [85, 100], color: "#f8d7da" }
+                ]
+            }
+        };
+
+        // Network Usage Gauge
+        var networkGauge = {
+            type: "indicator",
+            mode: "gauge+number",
+            value: {{ network_metric }},
+            gauge: {
+                axis: { range: [null, 1000] }, // Assuming network traffic in MB
+                bar: { color: "#007bff" },
+                steps: [
+                    { range: [0, 500], color: "#d4edda" },
+                    { range: [500, 850], color: "#ffeeba" },
+                    { range: [850, 1000], color: "#f8d7da" }
+                ]
+            }
+        };
+
+        // Layouts
+        var cpuGaugeLayout = { title: "CPU Utilization", font: { color: "black" }, paper_bgcolor: "#f8f9fa" };
+        var memGaugeLayout = { title: "Memory Utilization", font: { color: "black" }, paper_bgcolor: "#f8f9fa" };
+        var diskGaugeLayout = { title: "Disk Usage", font: { color: "black" }, paper_bgcolor: "#f8f9fa" };
+        var networkGaugeLayout = { title: "Network Traffic (MB)", font: { color: "black" }, paper_bgcolor: "#f8f9fa" };
+
+        // Plot the Gauges
+        Plotly.newPlot('cpu-gauge', [cpuGauge], cpuGaugeLayout);
+        Plotly.newPlot('mem-gauge', [memGauge], memGaugeLayout);
+        Plotly.newPlot('disk-gauge', [diskGauge], diskGaugeLayout);
+        Plotly.newPlot('network-gauge', [networkGauge], networkGaugeLayout);
+    </script>
+</body>
+</html>
